@@ -1,6 +1,120 @@
 {
   "version": 2,
-  "projects": {},
+  "projects": {
+    "swagger-api": {
+      "root": "apps/swagger-api",
+      "sourceRoot": "apps/swagger-api/src",
+      "projectType": "application",
+      "prefix": "swagger-api",
+      "generators": {},
+      "targets": {
+        "build": {
+          "executor": "@flowaccount/nx-serverless:build",
+          "options": {
+            "outputPath": "dist/apps/swagger-api",
+            "package": "apps/swagger-api",
+            "serverlessConfig": "apps/swagger-api/serverless.yml",
+            "servicePath": "apps/swagger-api",
+            "tsConfig": "apps/swagger-api/tsconfig.app.json",
+            "provider": "aws",
+            "processEnvironmentFile": "env.json"
+          },
+          "configurations": {
+            "dev": {
+              "optimization": false,
+              "sourceMap": false,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
+                }
+              ]
+            },
+            "production": {
+              "optimization": true,
+              "sourceMap": false,
+              "extractCss": true,
+              "namedChunks": false,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
+                }
+              ],
+              "fileReplacements": [
+                {
+                  "replace": "apps/swagger-api/environment.ts",
+                  "with": "apps/swagger-api/environment.prod.ts"
+                }
+              ]
+            }
+          }
+        },
+        "serve": {
+          "executor": "@flowaccount/nx-serverless:offline",
+          "options": {
+            "buildTarget": "swagger-api:build",
+            "config": "apps/swagger-api/serverless.yml",
+            "location": "dist/apps/swagger-api",
+            "port": 7777
+          },
+          "configurations": {
+            "dev": {
+              "buildTarget": "swagger-api:build:dev"
+            },
+            "production": {
+              "buildTarget": "swagger-api:build:production"
+            }
+          }
+        },
+        "deploy": {
+          "executor": "@flowaccount/nx-serverless:deploy",
+          "options": {
+            "buildTarget": "swagger-api:build:production",
+            "config": "apps/swagger-api/serverless.yml",
+            "location": "dist/apps/swagger-api",
+            "package": "dist/apps/swagger-api",
+            "stage": "dev"
+          }
+        },
+        "destroy": {
+          "executor": "@flowaccount/nx-serverless:destroy",
+          "options": {
+            "buildTarget": "swagger-api:build:production",
+            "config": "apps/swagger-api/serverless.yml",
+            "location": "dist/apps/swagger-api",
+            "package": "dist/apps/swagger-api"
+          }
+        },
+        "lint": {
+          "executor": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "exclude": [
+              "**/node_modules/**",
+              "!apps/swagger-api/**/*"
+            ],
+            "tsConfig": [
+              "apps/swagger-api/tsconfig.spec.json"
+            ]
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": [
+            "coverage/apps/swagger-api"
+          ],
+          "options": {
+            "jestConfig": "apps/swagger-api/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
+    }
+  },
   "cli": {
     "defaultCollection": "@nrwl/workspace"
   }
