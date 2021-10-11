@@ -93,10 +93,10 @@
         "sls": {
           "executor": "@flowaccount/nx-serverless:sls",
           "options": {
-            "buildTarget": "myapi:build:production",
-            "config": "apps/myapi/serverless.yml",
-            "location": "dist/apps/myapi",
-            "package": "dist/apps/myapi",
+            "buildTarget": "swagger-api:build:production",
+            "config": "apps/swagger-api/serverless.yml",
+            "location": "dist/apps/swagger-api",
+            "package": "dist/apps/swagger-api",
             "stage": "dev"
           }
         },

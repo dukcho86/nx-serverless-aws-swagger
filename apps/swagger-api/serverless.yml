@@ -4,12 +4,17 @@ plugins:
   - serverless-offline
   - serverless-iam-roles-per-function
   - serverless-s3-deploy
+  - serverless-s3-remover
   - serverless-scriptable-plugin
   - serverless-cloudformation-sub-variables
+  - serverless-dynamodb-local
+  - serverless-webpack
 package:
   individually: true
   excludeDevDependencies: false
 custom:
+  serverless-offline:
+    httpPort: 3003
   project: crud-swagger
   baseName: ${self:custom.project}-${self:provider.stage}-${self:service}
   dev_APP_STAGE: 'DEV STAGE'
@@ -24,7 +29,7 @@ custom:
     seed:
       groups:
         sources:
-          - table: ${self:provider.environment.TODOS_TABLE}
+          - table: ${self:provider.environment.MANUALS_TABLE}
             sources: [./seeds/manual.json]
     stages:
       - dev
@@ -46,9 +51,10 @@ custom:
       - ${cf:${self:custom.baseName}.SwaggerBucketName, ''}
 provider:
   name: aws
-  region: us-east-1
-  runtime: nodejs10.x
+  region: ${opt:region, 'us-east-1'}
+  runtime: nodejs14.x
   stage: ${opt:stage, 'dev'}
+  stackName: ${self:custom.baseName}
   environment:
     APP_STAGE: ${self:custom.${opt:stage, self:provider.stage}_APP_STAGE}
     MANUALS_TABLE: Manuals-${self:provider.stage}
