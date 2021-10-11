@@ -3,10 +3,10 @@ frameworkVersion: '>=1.1.0'
 plugins:
   - serverless-offline
   - serverless-iam-roles-per-function
+  - serverless-cloudformation-sub-variables
   - serverless-s3-deploy
   - serverless-s3-remover
   - serverless-scriptable-plugin
-  - serverless-cloudformation-sub-variables
   - serverless-dynamodb-local
   - serverless-webpack
 
@@ -43,7 +43,7 @@ custom:
     targets:
       - bucket: !Ref SwaggerBucket
         files:
-          - source: dist
+          - source: apps/swaggerapi/dist
             empty: true
             globs: '**/*'
   remover:
@@ -258,6 +258,6 @@ resources: # CloudFormation template syntax
                   Resource: 'arn:aws:apigateway:#{AWS::Region}::/restapis/#{ApiGatewayRestApi}/stages/${self:provider.stage}/exports/*'
 
         # save bucket name in outputs so it can be found when removing the service
-    Outputs:
-      SwaggerBucketName:
-        Value: !Ref SwaggerBucket
+  Outputs:
+    SwaggerBucketName:
+      Value: !Ref SwaggerBucket

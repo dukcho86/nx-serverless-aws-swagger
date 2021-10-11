@@ -6,6 +6,7 @@ const provider = serverless.service.provider;
 const awsProvider = serverless.getProvider('aws');
 
 const listStackResources = async (resources, nextToken) => {
+  console.log('complain----------->');
   resources = resources || [];
   const response = await awsProvider.request(
     'CloudFormation',
@@ -48,6 +49,7 @@ const getPhysicalId = (stackResources, logicalId) => {
 };
 
 const writeConfigFile = (config) => {
+  console.log('complain----------->');
   fs.writeFileSync(__dirname + '/src/config.json', JSON.stringify(config));
 };
 

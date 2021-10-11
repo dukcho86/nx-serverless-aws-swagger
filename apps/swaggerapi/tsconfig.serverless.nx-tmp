@@ -5,7 +5,9 @@
     "types": [
       "node"
     ],
-    "importHelpers": false
+    "importHelpers": false,
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true
   },
   "exclude": [
     "**/*.spec.ts",
