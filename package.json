@@ -9,6 +9,8 @@
   },
   "private": true,
   "dependencies": {
+    "@aws-amplify/auth": "^4.3.10",
+    "@aws-amplify/core": "^4.3.2",
     "aws-lambda": "^1.0.6",
     "aws-sdk": "^2.1004.0",
     "swagger-ui-dist": "^3.52.3",

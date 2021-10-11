@@ -16,6 +16,7 @@ custom:
   prod_APP_STAGE: 'PROD STAGE'
   scriptHooks:
     after:aws:deploy:deploy:updateStack:
+      - apps/swagger-api/generateConfigFile.js
       - webpack --config apps/swagger-api/webpack.config.js --mode production --progress
   assets:
     auto: true
