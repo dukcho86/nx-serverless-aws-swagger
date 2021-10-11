@@ -10,10 +10,24 @@ package:
   individually: true
   excludeDevDependencies: false
 custom:
-  project: CRUDswagger
+  project: crud-swagger
   baseName: ${self:custom.project}-${self:provider.stage}-${self:service}
   dev_APP_STAGE: 'DEV STAGE'
   prod_APP_STAGE: 'PROD STAGE'
+  dynamodb:
+    start:
+      port: 8000
+      inMemory: true
+      migrate: true
+      seed: true
+      noStart: true
+    seed:
+      groups:
+        sources:
+          - table: ${self:provider.environment.TODOS_TABLE}
+            sources: [./seeds/manual.json]
+    stages:
+      - dev
   scriptHooks:
     after:aws:deploy:deploy:updateStack:
       - apps/swagger-api/generateConfigFile.js
@@ -53,7 +67,7 @@ functions:
           - dynamodb:PutItem
         Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.MANUALS_TABLE}
   GetManuals:
-    handler: src/lambda/getManuals.handler
+    handler: src/lambda/getManual.handler
     events:
       - http:
           method: get
@@ -230,3 +244,8 @@ resources: # CloudFormation template syntax
                 - Effect: Allow
                   Action: apigateway:GET
                   Resource: 'arn:aws:apigateway:#{AWS::Region}::/restapis/#{ApiGatewayRestApi}/stages/${self:provider.stage}/exports/*'
+
+        # save bucket name in outputs so it can be found when removing the service
+    Outputs:
+      SwaggerBucketName:
+        Value: !Ref SwaggerBucket

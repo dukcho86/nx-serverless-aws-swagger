@@ -5,7 +5,7 @@ import {
   APIGatewayProxyResult,
 } from 'aws-lambda';
 
-import ManualService from '../services/manualService';
+import ManualService from '../services/ManualService';
 
 export const handler: APIGatewayProxyHandler = async (
   _event: APIGatewayProxyEvent

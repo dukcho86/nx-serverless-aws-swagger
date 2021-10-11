@@ -90,23 +90,26 @@
             "package": "dist/apps/swagger-api"
           }
         },
+        "sls": {
+          "executor": "@flowaccount/nx-serverless:sls",
+          "options": {
+            "buildTarget": "myapi:build:production",
+            "config": "apps/myapi/serverless.yml",
+            "location": "dist/apps/myapi",
+            "package": "dist/apps/myapi",
+            "stage": "dev"
+          }
+        },
         "lint": {
           "executor": "@angular-devkit/build-angular:tslint",
           "options": {
-            "exclude": [
-              "**/node_modules/**",
-              "!apps/swagger-api/**/*"
-            ],
-            "tsConfig": [
-              "apps/swagger-api/tsconfig.spec.json"
-            ]
+            "exclude": ["**/node_modules/**", "!apps/swagger-api/**/*"],
+            "tsConfig": ["apps/swagger-api/tsconfig.spec.json"]
           }
         },
         "test": {
           "executor": "@nrwl/jest:jest",
-          "outputs": [
-            "coverage/apps/swagger-api"
-          ],
+          "outputs": ["coverage/apps/swagger-api"],
           "options": {
             "jestConfig": "apps/swagger-api/jest.config.js",
             "passWithNoTests": true
