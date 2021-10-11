@@ -5,11 +5,17 @@ plugins:
 package:
   individually: true
   excludeDevDependencies: false
+custom:
+  dev_APP_STAGE: 'DEV STAGE'
+  prod_APP_STAGE: 'PROD STAGE'
 provider:
   name: aws
   region: us-east-1
-
   runtime: nodejs10.x
+  stage: ${opt:stage, 'dev'}
+  environment:
+    APP_STAGE: ${self:custom.${opt:stage, self:provider.stage}_APP_STAGE}
+
 functions:
   hello-world:
     handler: src/handler.helloWorld
