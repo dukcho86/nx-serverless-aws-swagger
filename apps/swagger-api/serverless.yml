@@ -15,11 +15,68 @@ provider:
   stage: ${opt:stage, 'dev'}
   environment:
     APP_STAGE: ${self:custom.${opt:stage, self:provider.stage}_APP_STAGE}
+    MANUALS_TABLE: Manuals-${self:provider.stage}
 
 functions:
-  hello-world:
-    handler: src/handler.helloWorld
+  createManual:
+    handler: src/lambda/createManual.handler
     events:
       - http:
-          path: hello-world
+          method: post
+          path: manuals
+          cors: true
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:PutItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.MANUALS_TABLE}
+  GetManuals:
+    handler: src/lambda/getManuals.handler
+    events:
+      - http:
           method: get
+          path: manuals
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:Scan
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.MANUALS_TABLE}
+  UpdateManual:
+    handler: src/lambda/updateManual.handler
+    events:
+      - http:
+          method: patch
+          path: manuals/{id}
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:UpdateItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.MANUALS_TABLE}
+  DeleteManual:
+    handler: src/lambda/deleteManual.handler
+    events:
+      - http:
+          method: delete
+          path: manuals/{id}
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:DeleteItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.MANUALS_TABLE}
+
+resources: # CloudFormation template syntax
+  Resources:
+    TodosDynamoDBTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:provider.environment.MANUALS_TABLE}
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        # AWS Free tier
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1

@@ -6,16 +6,22 @@ import {
   APIGatewayProxyResult,
 } from 'aws-lambda';
 // import * as uuid from 'uuid';
-// import { TodoItem } from '../models/TodoItem';
+// import { ManualItem } from '../models/ManualItem';
 import ManualService from '../services/ManualService';
 
 export const handler: APIGatewayProxyHandler = async (
   event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
-  const { name } = JSON.parse(event.body);
+  const { slug, title, description, video, image } = JSON.parse(event.body);
 
   const manualService = new ManualService();
-  const manual = await manualService.createManual(name);
+  const manual = await manualService.createManual(
+    slug,
+    title,
+    description,
+    video,
+    image
+  );
 
   return {
     statusCode: 201,

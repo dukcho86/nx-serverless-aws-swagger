@@ -10,26 +10,35 @@ export default class ManualService {
     this.manualRepository = manualRepository;
   }
 
-  async getAllTodos(): Promise<ManualItem[]> {
-    return this.manualRepository.getAllTodos();
+  async getAllManuals(): Promise<ManualItem[]> {
+    return this.manualRepository.getAllManuals();
   }
 
-  async createTodo(name: string): Promise<ManualItem> {
+  async createManual(
+    slug: string,
+    title: string,
+    description: string,
+    video: string,
+    image: string
+  ): Promise<ManualItem> {
     const id = uuid.v4();
 
-    return await this.manualRepository.createTodo({
+    return await this.manualRepository.createManual({
       id,
-      name,
-      done: false,
+      slug,
+      title,
+      description,
+      video,
+      image,
       createdAt: new Date().toISOString(),
     });
   }
 
-  async updateTodo(partialTodo: Partial<ManualItem>) {
-    return await this.manualRepository.updateTodo(partialTodo);
+  async updateManual(partialManual: Partial<ManualItem>) {
+    return await this.manualRepository.updateManual(partialManual);
   }
 
-  async deleteTodoById(id: string) {
-    return await this.manualRepository.deleteTodoById(id);
+  async deleteManualById(id: string) {
+    return await this.manualRepository.deleteManualById(id);
   }
 }
