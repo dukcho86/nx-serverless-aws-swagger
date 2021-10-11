@@ -3,12 +3,29 @@ frameworkVersion: '>=1.1.0'
 plugins:
   - serverless-offline
   - serverless-iam-roles-per-function
+  - serverless-s3-deploy
+  - serverless-scriptable-plugin
 package:
   individually: true
   excludeDevDependencies: false
 custom:
   dev_APP_STAGE: 'DEV STAGE'
   prod_APP_STAGE: 'PROD STAGE'
+  scriptHooks:
+    after:aws:deploy:deploy:updateStack:
+      - webpack --config apps/swagger-api/webpack.config.js --mode production --progress
+  assets:
+    auto: true
+    targets:
+      - bucket: !Ref SwaggerBucket
+        files:
+          - source: apps/myapi/dist
+            empty: true
+            globs: '**/*'
+  remover:
+    buckets:
+      # empty the Swagger UI S3 bucket content when removing the service so the bucket can be removed
+      - ${cf:${self:custom.baseName}.SwaggerBucketName, ''}
 provider:
   name: aws
   region: us-east-1
