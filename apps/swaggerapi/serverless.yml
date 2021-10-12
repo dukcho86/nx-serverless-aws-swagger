@@ -74,6 +74,9 @@ functions:
           method: post
           path: manuals
           cors: true
+          request:
+            schema:
+              application/json: ${file(manualSchema.json)}
     iamRoleStatements:
       - Effect: Allow
         Action:
@@ -86,6 +89,9 @@ functions:
           method: get
           path: manuals
           cors: true
+          request:
+            schema:
+              application/json: ${file(manualSchema.json)}
     iamRoleStatements:
       - Effect: Allow
         Action:
@@ -98,6 +104,9 @@ functions:
           method: patch
           path: manuals/{id}
           cors: true
+          request:
+            schema:
+              application/json: ${file(manualSchema.json)}
     iamRoleStatements:
       - Effect: Allow
         Action:
@@ -110,6 +119,9 @@ functions:
           method: delete
           path: manuals/{id}
           cors: true
+          request:
+            schema:
+              application/json: ${file(manualSchema.json)}
     iamRoleStatements:
       - Effect: Allow
         Action:
