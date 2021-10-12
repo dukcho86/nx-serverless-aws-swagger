@@ -27,7 +27,7 @@
     ]
   },
   "projects": {
-    "swagger-api": {
+    "swaggerapi": {
       "tags": []
     }
   }

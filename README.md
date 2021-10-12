@@ -1,4 +1,4 @@
-# Crud api
+# CRUD api
 
 ## Stack
 

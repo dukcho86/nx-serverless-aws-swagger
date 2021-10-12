@@ -1,0 +1,279 @@
+service: swaggerapi
+frameworkVersion: '>=1.1.0'
+plugins:
+  - serverless-offline
+  - serverless-iam-roles-per-function
+  - serverless-cloudformation-sub-variables
+  - serverless-s3-deploy
+  - serverless-s3-remover
+  - serverless-scriptable-plugin
+  - serverless-dynamodb-local
+  # - serverless-webpack
+
+custom:
+  # serverless-offline:
+  #   httpPort: 3003
+  project: crud-swagger
+  baseName: ${self:custom.project}-${self:provider.stage}-${self:service}
+
+  scriptHooks:
+    after:aws:deploy:deploy:updateStack:
+      - apps/swaggerapi/generateConfigFile.js
+      - webpack --config apps/swaggerapi/webpack.config.js --mode production --progress
+
+  dev_APP_STAGE: 'DEV STAGE'
+  prod_APP_STAGE: 'PROD STAGE'
+
+  # dynamodb:
+  #   start:
+  #     port: 8000
+  #     inMemory: true
+  #     migrate: true
+  #     seed: true
+  #     noStart: true
+  #   seed:
+  #     groups:
+  #       sources:
+  #         - table: ${self:provider.environment.MANUALS_TABLE}
+  #           sources: [./seeds/manual.json]
+  #   stages:
+  #     - dev
+
+  assets:
+    auto: true
+    targets:
+      - bucket: !Ref SwaggerBucket
+        files:
+          - source: apps/swaggerapi/dist
+            empty: true
+            globs: '**/*'
+  remover:
+    buckets:
+      # empty the Swagger UI S3 bucket content when removing the service so the bucket can be removed
+      - ${cf:${self:custom.baseName}.SwaggerBucketName, ''}
+
+package:
+  individually: true
+  excludeDevDependencies: false
+
+provider:
+  name: aws
+  region: ${opt:region, 'us-east-1'}
+  runtime: nodejs14.x
+  stage: ${opt:stage, 'dev'}
+  stackName: ${self:custom.baseName}
+  environment:
+    APP_STAGE: ${self:custom.${opt:stage, self:provider.stage}_APP_STAGE}
+    MANUALS_TABLE: Manuals-${self:provider.stage}
+
+functions:
+  CreateManual:
+    handler: src/lambda/createManual.handler
+    events:
+      - http:
+          method: post
+          path: manuals
+          cors: true
+          request:
+            schema:
+              application/json: ${file(manualSchema.json)}
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:PutItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.MANUALS_TABLE}
+  GetManuals:
+    handler: src/lambda/getManual.handler
+    events:
+      - http:
+          method: get
+          path: manuals
+          cors: true
+          request:
+            schema:
+              application/json: ${file(manualSchema.json)}
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:Scan
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.MANUALS_TABLE}
+  UpdateManual:
+    handler: src/lambda/updateManual.handler
+    events:
+      - http:
+          method: patch
+          path: manuals/{id}
+          cors: true
+          request:
+            schema:
+              application/json: ${file(manualSchema.json)}
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:UpdateItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.MANUALS_TABLE}
+  DeleteManual:
+    handler: src/lambda/deleteManual.handler
+    events:
+      - http:
+          method: delete
+          path: manuals/{id}
+          cors: true
+          request:
+            schema:
+              application/json: ${file(manualSchema.json)}
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:DeleteItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.MANUALS_TABLE}
+
+resources: # CloudFormation template syntax
+  Resources:
+    ManualsDynamoDBTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:provider.environment.MANUALS_TABLE}
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        # AWS Free tier
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+
+    SwaggerBucket:
+      Type: AWS::S3::Bucket
+
+    SwaggerDistribution:
+      Type: AWS::CloudFront::Distribution
+      Properties:
+        DistributionConfig:
+          Enabled: true
+          Comment: ${self:custom.baseName}
+          HttpVersion: http2
+          Origins:
+            - Id: swaggerS3
+              DomainName: '#{SwaggerBucket.RegionalDomainName}'
+              S3OriginConfig:
+                OriginAccessIdentity: 'origin-access-identity/cloudfront/#{SwaggerDistributionOAI}'
+          DefaultRootObject: index.html
+          DefaultCacheBehavior:
+            TargetOriginId: swaggerS3
+            AllowedMethods:
+              - GET
+              - HEAD
+            CachedMethods:
+              - GET
+              - HEAD
+            Compress: true
+            ViewerProtocolPolicy: redirect-to-https
+            ForwardedValues:
+              QueryString: false
+              Cookies:
+                Forward: none
+          PriceClass: PriceClass_100
+          ViewerCertificate:
+            CloudFrontDefaultCertificate: true
+
+    SwaggerBucketCloudFrontAccessPolicy:
+      Type: AWS::S3::BucketPolicy
+      Properties:
+        Bucket: !Ref SwaggerBucket
+        PolicyDocument:
+          Statement:
+            - Action: s3:GetObject
+              Effect: Allow
+              Resource: 'arn:aws:s3:::#{SwaggerBucket}/*'
+              Principal:
+                CanonicalUser: !GetAtt SwaggerDistributionOAI.S3CanonicalUserId
+
+    SwaggerDistributionOAI:
+      Type: AWS::CloudFront::CloudFrontOriginAccessIdentity
+      Properties:
+        CloudFrontOriginAccessIdentityConfig:
+          Comment: 'Access #{SwaggerBucket} bucket'
+
+    UserPool:
+      Type: AWS::Cognito::UserPool
+      Properties:
+        UserPoolName: ${self:custom.baseName}-swaggerui
+        Schema:
+          - Name: email
+            Required: true
+            Mutable: true
+        AdminCreateUserConfig:
+          AllowAdminCreateUserOnly: true
+
+    UserPoolDomain:
+      Type: AWS::Cognito::UserPoolDomain
+      Properties:
+        UserPoolId: !Ref UserPool
+        Domain: ${self:custom.baseName}
+
+    SwaggerUIAppClient:
+      Type: AWS::Cognito::UserPoolClient
+      Properties:
+        ClientName: SwaggerUI
+        UserPoolId: !Ref UserPool
+        GenerateSecret: false
+        SupportedIdentityProviders:
+          - COGNITO
+        AllowedOAuthFlowsUserPoolClient: true
+        AllowedOAuthFlows:
+          - code
+        AllowedOAuthScopes:
+          - email
+          - openid
+        CallbackURLs:
+          - 'https://#{SwaggerDistribution.DomainName}'
+        LogoutURLs:
+          - 'https://#{SwaggerDistribution.DomainName}'
+
+    SwaggerUIIdentityProvider:
+      Type: AWS::Cognito::IdentityPool
+      Properties:
+        IdentityPoolName: swaggerui
+        CognitoIdentityProviders:
+          - ProviderName: 'cognito-idp.#{AWS::Region}.amazonaws.com/#{UserPool}'
+            ClientId: !Ref SwaggerUIAppClient
+        AllowUnauthenticatedIdentities: false
+
+    SwaggerUIIdentityProviderRoles:
+      Type: AWS::Cognito::IdentityPoolRoleAttachment
+      Properties:
+        IdentityPoolId: !Ref SwaggerUIIdentityProvider
+        Roles:
+          authenticated: !GetAtt SwaggerUIAuthRole.Arn
+
+    SwaggerUIAuthRole:
+      Type: AWS::IAM::Role
+      Properties:
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Federated: cognito-identity.amazonaws.com
+              Action: sts:AssumeRoleWithWebIdentity
+              Condition:
+                StringEquals:
+                  cognito-identity.amazonaws.com:aud: !Ref SwaggerUIIdentityProvider
+                ForAnyValue:StringLike:
+                  cognito-identity.amazonaws.com:amr: authenticated
+        Policies:
+          - PolicyName: api-gateway
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: Allow
+                  Action: apigateway:GET
+                  Resource: 'arn:aws:apigateway:#{AWS::Region}::/restapis/#{ApiGatewayRestApi}/stages/${self:provider.stage}/exports/*'
+
+        # save bucket name in outputs so it can be found when removing the service
+  Outputs:
+    SwaggerBucketName:
+      Value: !Ref SwaggerBucket
