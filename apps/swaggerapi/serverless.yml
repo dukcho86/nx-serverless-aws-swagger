@@ -76,7 +76,7 @@ functions:
           cors: true
           request:
             schema:
-              application/json: ${file(manualSchema.json)}
+              application/json: ${file(src/schema/manualSchema.json)}
     iamRoleStatements:
       - Effect: Allow
         Action:
@@ -91,7 +91,7 @@ functions:
           cors: true
           request:
             schema:
-              application/json: ${file(manualSchema.json)}
+              application/json: ${file(src/schema/manualSchema.json)}
     iamRoleStatements:
       - Effect: Allow
         Action:
@@ -106,7 +106,7 @@ functions:
           cors: true
           request:
             schema:
-              application/json: ${file(manualSchema.json)}
+              application/json: ${file(src/schema/manualSchema.json)}
     iamRoleStatements:
       - Effect: Allow
         Action:
@@ -121,7 +121,7 @@ functions:
           cors: true
           request:
             schema:
-              application/json: ${file(manualSchema.json)}
+              application/json: ${file(src/schema/manualSchema.json)}
     iamRoleStatements:
       - Effect: Allow
         Action:
