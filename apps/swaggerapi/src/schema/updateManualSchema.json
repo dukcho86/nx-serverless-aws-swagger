@@ -31,18 +31,18 @@
           "maxLength": 500
         }
       },
-      "required": ["slug", "title", "description", "video", "image"]
+      "required": ["title"]
     }
   },
   "type": "object",
 
-  "title": "Manual Schema",
-  "required": ["manuals"],
+  "title": "update manual",
+  "required": ["updatedManuals"],
   "properties": {
-    "manuals": {
+    "updatedManuals": {
       "type": "array",
       "uniqueItems": true,
-      "title": "The manual array holding manuals",
+      "title": "The manual array holding updated manuals",
       "items": { "$ref": "#/definitions/manual" }
     }
   }

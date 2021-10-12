@@ -76,7 +76,11 @@ functions:
           cors: true
           request:
             schema:
-              application/json: ${file(src/schema/manualSchema.json)}
+              application/json: ${file(src/schema/createManualSchema.json)}
+          response:
+            statusCodes:
+              201:
+                pattern: ''
     iamRoleStatements:
       - Effect: Allow
         Action:
@@ -91,7 +95,11 @@ functions:
           cors: true
           request:
             schema:
-              application/json: ${file(src/schema/manualSchema.json)}
+              application/json: ${file(src/schema/getManualSchema.json)}
+          response:
+            statusCodes:
+              201:
+                pattern: ''
     iamRoleStatements:
       - Effect: Allow
         Action:
@@ -106,7 +114,11 @@ functions:
           cors: true
           request:
             schema:
-              application/json: ${file(src/schema/manualSchema.json)}
+              application/json: ${file(src/schema/updateManualSchema.json)}
+          response:
+            statusCodes:
+              201:
+                pattern: ''
     iamRoleStatements:
       - Effect: Allow
         Action:
@@ -121,7 +133,11 @@ functions:
           cors: true
           request:
             schema:
-              application/json: ${file(src/schema/manualSchema.json)}
+              application/json: ${file(src/schema/deleteManualSchema.json)}
+          response:
+            statusCodes:
+              201:
+                pattern: ''
     iamRoleStatements:
       - Effect: Allow
         Action:

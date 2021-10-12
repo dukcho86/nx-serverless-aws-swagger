@@ -1,0 +1,49 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema",
+
+  "definitions": {
+    "manual": {
+      "type": "object",
+      "properties": {
+        "slug": {
+          "type": "string",
+          "minLength": 10,
+          "maxLength": 500
+        },
+        "title": {
+          "type": "string",
+          "minLength": 10,
+          "maxLength": 500
+        },
+        "description": {
+          "type": "string",
+          "minLength": 10,
+          "maxLength": 500
+        },
+        "video": {
+          "type": "string",
+          "minLength": 10,
+          "maxLength": 500
+        },
+        "image": {
+          "type": "string",
+          "minLength": 10,
+          "maxLength": 500
+        }
+      },
+      "required": ["title", "image"]
+    }
+  },
+  "type": "object",
+
+  "title": "create manual",
+  "required": ["createManuals"],
+  "properties": {
+    "createManuals": {
+      "type": "array",
+      "uniqueItems": true,
+      "title": "The manual array holding created manuals",
+      "items": { "$ref": "#/definitions/manual" }
+    }
+  }
+}
