@@ -8,7 +8,7 @@ plugins:
   - serverless-s3-remover
   - serverless-scriptable-plugin
   - serverless-dynamodb-local
-  - serverless-webpack
+  # - serverless-webpack
 
 custom:
   # serverless-offline:
@@ -38,6 +38,7 @@ custom:
   #           sources: [./seeds/manual.json]
   #   stages:
   #     - dev
+
   assets:
     auto: true
     targets:
@@ -66,7 +67,7 @@ provider:
     MANUALS_TABLE: Manuals-${self:provider.stage}
 
 functions:
-  createManual:
+  CreateManual:
     handler: src/lambda/createManual.handler
     events:
       - http:
@@ -84,6 +85,7 @@ functions:
       - http:
           method: get
           path: manuals
+          cors: true
     iamRoleStatements:
       - Effect: Allow
         Action:
@@ -95,6 +97,7 @@ functions:
       - http:
           method: patch
           path: manuals/{id}
+          cors: true
     iamRoleStatements:
       - Effect: Allow
         Action:
@@ -106,6 +109,7 @@ functions:
       - http:
           method: delete
           path: manuals/{id}
+          cors: true
     iamRoleStatements:
       - Effect: Allow
         Action:

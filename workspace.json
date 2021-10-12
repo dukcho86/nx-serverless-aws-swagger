@@ -78,7 +78,8 @@
             "config": "apps/swaggerapi/serverless.yml",
             "location": "dist/apps/swaggerapi",
             "package": "dist/apps/swaggerapi",
-            "stage": "dev"
+            "stage": "dev",
+            "packager": "npm"
           }
         },
         "destroy": {
