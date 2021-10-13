@@ -249,8 +249,16 @@ resources: # CloudFormation template syntax
           - email
           - openid
         CallbackURLs:
+          - !If
+            - StageIsDev
+            - http://localhost:8000
+            - !Ref AWS::NoValue
           - 'https://#{SwaggerDistribution.DomainName}'
         LogoutURLs:
+          - !If
+            - StageIsDev
+            - http://localhost:8000
+            - !Ref AWS::NoValue
           - 'https://#{SwaggerDistribution.DomainName}'
 
     SwaggerUIIdentityProvider:
