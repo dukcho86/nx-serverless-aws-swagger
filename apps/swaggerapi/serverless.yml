@@ -1,18 +1,18 @@
 service: swaggerapi
 frameworkVersion: '>=1.1.0'
 plugins:
-  - serverless-offline
   - serverless-iam-roles-per-function
   - serverless-cloudformation-sub-variables
   - serverless-s3-deploy
   - serverless-s3-remover
   - serverless-scriptable-plugin
   - serverless-dynamodb-local
+  - serverless-offline
   # - serverless-webpack
 
 custom:
-  # serverless-offline:
-  #   httpPort: 3003
+  serverless-offline:
+    httpPort: 3003
   project: crud-swagger
   baseName: ${self:custom.project}-${self:provider.stage}-${self:service}
 
@@ -24,20 +24,20 @@ custom:
   dev_APP_STAGE: 'DEV STAGE'
   prod_APP_STAGE: 'PROD STAGE'
 
-  # dynamodb:
-  #   start:
-  #     port: 8000
-  #     inMemory: true
-  #     migrate: true
-  #     seed: true
-  #     noStart: true
-  #   seed:
-  #     groups:
-  #       sources:
-  #         - table: ${self:provider.environment.MANUALS_TABLE}
-  #           sources: [./seeds/manual.json]
-  #   stages:
-  #     - dev
+  dynamodb:
+    start:
+      port: 8000
+      inMemory: true
+      migrate: true
+      seed: true
+      noStart: true
+    seed:
+      groups:
+        sources:
+          - table: ${self:provider.environment.MANUALS_TABLE}
+            sources: [./seeds/manual.json]
+    stages:
+      - dev
 
   assets:
     auto: true
@@ -220,7 +220,7 @@ resources: # CloudFormation template syntax
     UserPool:
       Type: AWS::Cognito::UserPool
       Properties:
-        UserPoolName: ${self:custom.baseName}-swaggerui
+        UserPoolName: ${self:custom.baseName}
         Schema:
           - Name: email
             Required: true
