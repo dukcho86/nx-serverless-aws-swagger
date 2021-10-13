@@ -1,6 +1,5 @@
 /* @import '~swagger-ui-dist/swagger-ui.css'; */
-/* @import '~swagger-ui-themes/themes/3.x/theme-flattop.css'; */
-@import '../../../node_modules/swagger-ui-themes/themes/3.x/theme-feeling-blue.css';
+@import '~swagger-ui-themes/themes/3.x/theme-flattop.css';
 
 body {
   margin: 0;
