@@ -1,0 +1,28 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema",
+
+  "definitions": {
+    "manual": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[0-9]+$"
+        }
+      },
+      "required": ["id"]
+    }
+  },
+  "type": "object",
+
+  "title": "delete manual",
+  "required": ["deletedManuals"],
+  "properties": {
+    "deletedManuals": {
+      "type": "array",
+      "uniqueItems": true,
+      "title": "The manual array holding deleted manual",
+      "items": { "$ref": "#/definitions/manual" }
+    }
+  }
+}

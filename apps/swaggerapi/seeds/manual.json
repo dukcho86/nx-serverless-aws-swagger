@@ -1,5 +1,6 @@
 [
   {
+    "id": "1",
     "slug": "adjusting-size",
     "title": "Adjusting the size",
     "description": "This video instruction describes how to properly adjust the size of your BiLumix to fit your head.",
@@ -13,6 +14,7 @@
     }
   },
   {
+    "id": "2",
     "slug": "power-on-off",
     "title": "Power On-Off",
     "description": "This video instruction describes how to turn on/off the light on your BiLumix and details some common problems and troubleshooting tips with regards to the LED lights.",
@@ -26,6 +28,7 @@
     }
   },
   {
+    "id": "3",
     "slug": "battery-connection",
     "title": "Battery Connection",
     "description": "This video instruction describes how to properly insert and remove the battery.",
@@ -39,6 +42,7 @@
     }
   },
   {
+    "id": "4",
     "slug": "replacing-cushion",
     "title": "Replacing Cushion",
     "description": "This video instruction describes how to correctly replace the forehead cushion of your BiLumix.",
@@ -52,6 +56,7 @@
     }
   },
   {
+    "id": "5",
     "slug": "replacing-handle",
     "title": "Replacing Handle",
 
@@ -65,6 +70,7 @@
     }
   },
   {
+    "id": "6",
     "slug": "light-cap-replacement",
     "title": "Light cap replacement",
     "description": "This video instruction describes how to properly replace the plastic light caps on the two LED lights of your BiLumix.",
@@ -78,6 +84,7 @@
     }
   },
   {
+    "id": "7",
     "slug": "head-support-replacement",
     "title": "Head support replacement",
     "description": "This video instruction describes how to correctly replace the head support on the underside of your BiLumix located towards the back.",
@@ -91,6 +98,7 @@
     }
   },
   {
+    "id": "8",
     "slug": "1_5xloupe-setup",
     "title": "1.5x loupe setup",
     "description": "This video instruction describes how to properly set up and remove your 1.5x or 2.0x loupes of your BiLumix.",
@@ -104,6 +112,7 @@
     }
   },
   {
+    "id": "9",
     "slug": "3_5xloupe-setup",
     "title": "3.5x loupe setup",
     "description": "This video instruction describes how to properly set up and remove your 3.5x loupes of your BiLumix.",
@@ -117,6 +126,7 @@
     }
   },
   {
+    "id": "10",
     "slug": "calibrating-your-loupe",
     "title": "Calibrating loupe",
     "description": "This video instruction describes how to properly calibrate your 3.5x loupes to match your interpupillary distance and your focal/working distance.",
@@ -130,6 +140,7 @@
     }
   },
   {
+    "id": "11",
     "slug": "adjusting-forehead-band",
     "title": "Adjusting forehead band",
     "description": "This video instruction describes how to adjust the forehead band of your BiLumix to the most comfortable distance away from your head for a more customized fit.",
@@ -143,6 +154,7 @@
     }
   },
   {
+    "id": "12",
     "slug": "troubleshooting",
     "title": "Troubleshooting",
     "description": "This video describes troubleshooting tips with regards to the LED lights not turning on.",
@@ -156,6 +168,7 @@
     }
   },
   {
+    "id": "13",
     "slug": "switching-lenses",
     "title": "Switching lenses",
     "description": "This video instruction describes how to easily switch your loupes from the basic 1.5x to the 2.5x or 3.5x loupes and vice versa.",

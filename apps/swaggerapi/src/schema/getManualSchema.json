@@ -1,0 +1,28 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema",
+
+  "definitions": {
+    "manual": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[0-9]+$"
+        }
+      },
+      "required": ["id"]
+    }
+  },
+  "type": "object",
+
+  "title": "get manual",
+  "required": ["getManuals"],
+  "properties": {
+    "getManuals": {
+      "type": "array",
+      "uniqueItems": true,
+      "title": "The manual array holding get manuals",
+      "items": { "$ref": "#/definitions/manual" }
+    }
+  }
+}

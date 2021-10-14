@@ -1,18 +1,18 @@
 service: swaggerapi
 frameworkVersion: '>=1.1.0'
 plugins:
-  - serverless-offline
   - serverless-iam-roles-per-function
   - serverless-cloudformation-sub-variables
   - serverless-s3-deploy
   - serverless-s3-remover
   - serverless-scriptable-plugin
   - serverless-dynamodb-local
+  - serverless-offline
   # - serverless-webpack
 
 custom:
-  # serverless-offline:
-  #   httpPort: 3003
+  serverless-offline:
+    httpPort: 3003
   project: crud-swagger
   baseName: ${self:custom.project}-${self:provider.stage}-${self:service}
 
@@ -24,20 +24,20 @@ custom:
   dev_APP_STAGE: 'DEV STAGE'
   prod_APP_STAGE: 'PROD STAGE'
 
-  # dynamodb:
-  #   start:
-  #     port: 8000
-  #     inMemory: true
-  #     migrate: true
-  #     seed: true
-  #     noStart: true
-  #   seed:
-  #     groups:
-  #       sources:
-  #         - table: ${self:provider.environment.MANUALS_TABLE}
-  #           sources: [./seeds/manual.json]
-  #   stages:
-  #     - dev
+  dynamodb:
+    start:
+      port: 8000
+      inMemory: true
+      migrate: true
+      seed: true
+      noStart: true
+    seed:
+      groups:
+        sources:
+          - table: ${self:provider.environment.MANUALS_TABLE}
+            sources: [./seeds/manual.json]
+    stages:
+      - dev
 
   assets:
     auto: true
@@ -74,9 +74,14 @@ functions:
           method: post
           path: manuals
           cors: true
+          integration: lambda
           request:
             schema:
-              application/json: ${file(src/schema/manualSchema.json)}
+              application/json: ${file(src/schema/createManualSchema.json)}
+          response:
+            statusCodes:
+              201:
+                pattern: ''
     iamRoleStatements:
       - Effect: Allow
         Action:
@@ -89,9 +94,14 @@ functions:
           method: get
           path: manuals
           cors: true
+          integration: lambda
           request:
             schema:
-              application/json: ${file(src/schema/manualSchema.json)}
+              application/json: ${file(src/schema/getManualSchema.json)}
+          response:
+            statusCodes:
+              201:
+                pattern: ''
     iamRoleStatements:
       - Effect: Allow
         Action:
@@ -104,9 +114,14 @@ functions:
           method: patch
           path: manuals/{id}
           cors: true
+          integration: lambda
           request:
             schema:
-              application/json: ${file(src/schema/manualSchema.json)}
+              application/json: ${file(src/schema/updateManualSchema.json)}
+          response:
+            statusCodes:
+              201:
+                pattern: ''
     iamRoleStatements:
       - Effect: Allow
         Action:
@@ -119,9 +134,14 @@ functions:
           method: delete
           path: manuals/{id}
           cors: true
+          integration: lambda
           request:
             schema:
-              application/json: ${file(src/schema/manualSchema.json)}
+              application/json: ${file(src/schema/deleteManualSchema.json)}
+          response:
+            statusCodes:
+              201:
+                pattern: ''
     iamRoleStatements:
       - Effect: Allow
         Action:
@@ -129,6 +149,9 @@ functions:
         Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.MANUALS_TABLE}
 
 resources: # CloudFormation template syntax
+  Conditions:
+    StageIsDev: !Equals ['${self:provider.stage}', 'dev']
+
   Resources:
     ManualsDynamoDBTable:
       Type: AWS::DynamoDB::Table
@@ -200,7 +223,7 @@ resources: # CloudFormation template syntax
     UserPool:
       Type: AWS::Cognito::UserPool
       Properties:
-        UserPoolName: ${self:custom.baseName}-swaggerui
+        UserPoolName: ${self:custom.baseName}
         Schema:
           - Name: email
             Required: true
@@ -229,8 +252,16 @@ resources: # CloudFormation template syntax
           - email
           - openid
         CallbackURLs:
+          - !If
+            - StageIsDev
+            - http://localhost:8000
+            - !Ref AWS::NoValue
           - 'https://#{SwaggerDistribution.DomainName}'
         LogoutURLs:
+          - !If
+            - StageIsDev
+            - http://localhost:8000
+            - !Ref AWS::NoValue
           - 'https://#{SwaggerDistribution.DomainName}'
 
     SwaggerUIIdentityProvider:
