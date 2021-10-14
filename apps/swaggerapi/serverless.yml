@@ -149,6 +149,9 @@ functions:
         Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.MANUALS_TABLE}
 
 resources: # CloudFormation template syntax
+  Conditions:
+    StageIsDev: !Equals ['${self:provider.stage}', 'dev']
+
   Resources:
     ManualsDynamoDBTable:
       Type: AWS::DynamoDB::Table
